@@ -1,22 +1,25 @@
 package com.example.newtodolist
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerView.Adapter<TasksAdapter.TaskViewHolder>(){
 
+    private val db: TaskDatabaseHelper = TaskDatabaseHelper(context)
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
         val priorityTextView: TextView = itemView.findViewById(R.id.priorityTextView)
         val deadLineTextView: TextView = itemView.findViewById(R.id.deadLineTextView)
         val contentTextView: TextView = itemView.findViewById(R.id.contentTextView)
-//        val editButton: ImageView = itemView.findViewById(R.id.updateIcon)
-//        val deleteButton: ImageView = itemView.findViewById(R.id.deleteIcon)
+        val updateButton: ImageView = itemView.findViewById(R.id.updateButton)
+        val deleteButton: ImageView = itemView.findViewById(R.id.deleteButton)
 
 
 
@@ -38,18 +41,18 @@ class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerVi
         holder.deadLineTextView.text =task.deadLine
         holder.contentTextView.text =task.description
 
-//        holder.editButton.setOnClickListener{
-//            val intent =Intent(holder.itemView.context, UpdateNotes::class.java).apply {
-//                putExtra("diary_id", currentDiary.id)
-//            }
-//            holder.itemView.context.startActivity(intent)
-//        }
-//
-//        holder.deleteButton.setOnClickListener{
-//            db.deleteNote(currentDiary.id)
-//            refreshData(db.getAllNotes())
-//            Toast.makeText(holder.itemView.context, "Note Deleted", Toast.LENGTH_SHORT).show()
-//        }
+        holder.updateButton.setOnClickListener{
+            val intent = Intent(holder.itemView.context,UpdateTaskActivity::class.java).apply {
+                putExtra("task_id", task.id)
+            }
+            holder.itemView.context.startActivity(intent)
+        }
+
+        holder.deleteButton.setOnClickListener{
+            db.deleteTask(task.id)
+            refreshData(db.getAllTasks())
+            Toast.makeText(holder.itemView.context, "Note Deleted", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun refreshData(newTasks : List<Task>){

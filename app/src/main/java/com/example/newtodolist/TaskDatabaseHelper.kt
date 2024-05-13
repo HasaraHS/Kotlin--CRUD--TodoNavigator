@@ -64,5 +64,42 @@ class TaskDatabaseHelper  (context: Context) : SQLiteOpenHelper(context,DATABASE
         return tasks
     }
 
+    fun  updateTask(tasks: Task){
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_TITLE, tasks.title)
+            put(COLUMN_PRIORITY,tasks.priority)
+            put(COLUMN_DEADLINE, tasks.deadLine)
+            put(COLUMN_CONTENT, tasks.description)
+        }
+        val whereClause = "$COLUMN_ID = ?"
+        val whereArgs = arrayOf(tasks.id.toString())
+        db.update(TABLE_NAME, values, whereClause, whereArgs)
+        db.close()
+    }
 
+    fun getTaskById(taskID: Int): Task{
+        val db =readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = $taskID"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+        val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+        val priority = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRIORITY))
+        val deadLine = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEADLINE))
+        val description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
+
+        cursor.close()
+        db.close()
+        return Task(id, title, priority,deadLine,description)
+    }
+
+    fun deleteTask(taskID : Int){
+        val db = writableDatabase
+        val whereClause = "$COLUMN_ID = ?"
+        val whereArgs = arrayOf(taskID.toString())
+        db.delete(TABLE_NAME, whereClause, whereArgs)
+        db.close()
+    }
 }
