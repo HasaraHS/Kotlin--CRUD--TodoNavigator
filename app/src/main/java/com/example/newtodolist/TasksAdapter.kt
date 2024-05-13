@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerView.Adapter<TasksAdapter.TaskViewHolder>(){
@@ -20,6 +21,7 @@ class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerVi
         val contentTextView: TextView = itemView.findViewById(R.id.contentTextView)
         val updateButton: ImageView = itemView.findViewById(R.id.updateButton)
         val deleteButton: ImageView = itemView.findViewById(R.id.deleteButton)
+        val priorityIndicator: View = itemView.findViewById(R.id.priorityIndicator)
 
 
 
@@ -40,6 +42,13 @@ class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerVi
         holder.priorityTextView.text = task.priority
         holder.deadLineTextView.text =task.deadLine
         holder.contentTextView.text =task.description
+
+        when (task.priority) {
+            "High" -> holder.priorityIndicator.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.highPriorityColor))
+            "Medium" -> holder.priorityIndicator.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.mediumPriorityColor))
+            "Low" -> holder.priorityIndicator.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.lowPriorityColor))
+            else -> holder.priorityIndicator.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, android.R.color.transparent))
+        }
 
         holder.updateButton.setOnClickListener{
             val intent = Intent(holder.itemView.context,UpdateTaskActivity::class.java).apply {
