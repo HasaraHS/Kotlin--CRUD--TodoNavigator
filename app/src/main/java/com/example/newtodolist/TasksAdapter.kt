@@ -10,6 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerView.Adapter<TasksAdapter.TaskViewHolder>(){
 
@@ -50,6 +53,12 @@ class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerVi
             else -> holder.priorityIndicator.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, android.R.color.transparent))
         }
 
+        // Check if the deadline has passed
+        if (isDeadlinePassed(task.deadLine)) {
+            // Show reminder
+            showReminder(holder.itemView.context)
+        }
+
         holder.updateButton.setOnClickListener{
             val intent = Intent(holder.itemView.context,UpdateTaskActivity::class.java).apply {
                 putExtra("task_id", task.id)
@@ -62,6 +71,17 @@ class TasksAdapter (private var tasks: List<Task>, context: Context): RecyclerVi
             refreshData(db.getAllTasks())
             Toast.makeText(holder.itemView.context, "Note Deleted", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun isDeadlinePassed(deadline: String): Boolean {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val currentDate = Date()
+        val deadlineDate = dateFormat.parse(deadline)
+        return currentDate.after(deadlineDate)
+    }
+
+    private fun showReminder(context: Context) {
+        Toast.makeText(context, "Deadline has passed!", Toast.LENGTH_SHORT).show()
     }
 
     fun refreshData(newTasks : List<Task>){
